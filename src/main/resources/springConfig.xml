@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <!-- 作用解释：context:component-scan：将带有@Controller、@Service、@Repository、@Component注解的类加入到Spring容器
+                   base-package（位置是相对于classpath来写的）：扫描的基础包的位置，也就是如果该包下还有包，也会对子包扫描
+                   classpath：在idea中是该项目位置的WEB-INF下的classes目录-->
+    <!-- 1. 配置注解扫描（除了Controller，全部都扫描） -->
+    <context:component-scan base-package="com.test.ssm.service, com.test.ssm.domain"/>
+
+    <!-- 作用解释：location:数据库配置文件（.properties文件位置）,这里采用相对classpath位置来写 -->
+    <!-- 2. 加载数据库配置文件，并配置数据源(也是一个bean) -->
+    <context:property-placeholder location="classpath:database.properties" />
+    <!-- 获取数据源（使用dbcp连接池） -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+
+    <!--作用解释 ： sqlSessionFactory: 用来生产sqlSession的工厂Bean
+            sqlSession: 相当于JDBC中的connection对象，用来操作数据库
+            属性：dataSource：数据源，这里引用上面配置好的数据源
+            configLocation：mybatis配置文件的位置（采用相对classpath位置的表示法）-->
+    <!-- 3.配置myBatis的SqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatisConfig.xml"/>
+    </bean>
+
+
+    <!--作用解释： dao层的java文件只是接口，没有具体实现类，要想操作数据库，需要有一个一一对应的实现类，该实现类
+    再操作mapper.xml文件来操作数据库
+    MapperScannerConfigurer：自动为指定位置的java接口创建实现类,并且该实现类已经实现可操作mapper.xml文件的功能
+    （建议：最好将dao层文件的命名和mapper文件的命名一致（这里是cn.association.mapper.**Mapper.java以及cn.association.mapper.**Mapper.xml））-->
+    <!-- 5.配置Mybatis的MapperScannerConfigurer -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.test.ssm.dao"/>
+    </bean>
+
+    <!-- 配置文件上传解析器 -->
+    <!-- id 的值是固定的-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸为 5MB -->
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
+    </bean>
+</beans>
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 实体类类型别名，方便在mapper.xml文件使用（例如User类可以写User、user、cn.association.pojo.User都可以） -->
+    <typeAliases>
+        <package name="com.test.ssm.domain"/>
+    </typeAliases>
+
+</configuration>

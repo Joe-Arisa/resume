@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!-- 作用解释：controller放在这里扫描是因为Controller类不仅要放在Spring容器，还应该将其注册为一个处理器（相当于一个Servlet）-->
+    <!-- 1.扫描controller -->
+    <context:component-scan base-package="com.test.ssm.controller"/>
+
+    <!-- 作用解释：再web.xml文件中将所有请求拦截下来，寻找合适的 处理器进行处理，但是静态文件应该是直接访问而不需要拦截比较简便，
+        这里配置了静态文件的访问
+        属性：location：请求地址为/statics/ 的请求 被拦截下来以后不会被送往处理器，而是直接访问静态文件
+            mapping： 访问的静态文件位置（相对于webapp项目根目录）,若请求地址为localhost:8080/statics/files/test.html,则返回
+            wenapp/files/statics/test.html文件-->
+    <!-- 2.配置静态文件访问 -->
+    <!--
+    <mvc:resources mapping="/statics/**" location="/statics/"/>
+    -->
+    <!-- 作用解释：省去了自己在Servlet程序中自己解析文件流的步骤-->
+    <!-- 3.配置支持文件上传 -->
+    <!--
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="500000"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+    -->
+    <!-- 作用解释：将处理器返回的字符串/ModelAndView/Model对象解析为对应的视图
+        prefix：视图在项目的位置，相对于webapp（项目根目录）位置，在后端可以访问WEB-INF目录，但是前端不可以
+        suffix: 将返回的视图名加上.jsp，以方便解析为一个真正的视图-->
+    <!-- 4.配置简易的视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--作用解释: 一般的Controller方法是直接加上@RequestMapping(), 而返回的是一个视图名称，有时候想要返回一些数据，
+     就需要加上@ResponseBody注解，以下的配置就会将加上@ResponseBody注解方法返回的值不解析为一个视图，而是一个json数据，
+     返回给前端-->
+    <!-- 5.配置springmvc注解驱动，支持springmvc的一些更高级的功能-->
+    <mvc:annotation-driven>
+        <!-- 配置消息转化器   -->
+        <mvc:message-converters>
+            <!--  将请求消息转化为字符串以及输出相应消息才用的转化器 -->
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <!--   配置支持的媒体类型为utf-8 -->
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+            <!-- 配置FastJson的消息转化器 来解决json传递过程中 的日期格式   -->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json</value>
+                    </list>
+                </property>
+                <!-- 如果需要返回日期类型，这个需要配置一下 -->
+                <property name="features">
+                    <list>
+                        <!-- 输出Date的日期转化器 -->
+                        <value>WriteDateUseDateFormat</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 作用解释：（会在请求被送往Controller之前处理）假设用户想要不登录直接通过地址栏进入用户界面，该拦截器就会起作用
+        属性：path：哪些请求地址会被拦截
+              class: 具体实施拦截的类-->
+    <!-- 6.定义拦截器,可以理解为SpringMVC的拦截器是基于HandlerMapping的
+        path:访问path的请求都要经过拦截器
+    -->
+    <!--
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/sys/**"/>
+            自定义系统拦截器
+            <bean class="cn.association.interceptor.SysInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    -->
+
+    <!--    配置拦截器(登录拦截器)-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- 拦截所有mvc控制器 -->
+            <mvc:mapping path="/**"/>
+            <!--            设置哪些请求不拦截-->
+            <mvc:exclude-mapping path="/user/login"/>
+            <mvc:exclude-mapping path="/user/add"/>
+            <!-- mvc:exclude-mapping是另外一种拦截，它可以在你后来的测试中对某个页面进行不拦截，这样就不用在
+                LoginInterceptor的preHandler方法里面获取不拦截的请求uri地址了(优选) -->
+            <mvc:exclude-mapping path="/" />
+            <bean class="com.test.ssm.tools.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>
+
+
+
+
+
+

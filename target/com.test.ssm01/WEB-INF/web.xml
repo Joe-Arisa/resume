@@ -1,0 +1,112 @@
+<!--<!DOCTYPE web-app PUBLIC-->
+<!--        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"-->
+<!--        "http://java.sun.com/dtd/web-app_2_3.dtd" >-->
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <!-- 作用解释：因为web项目没有启动函数，因此无法手动加载spring容器，但是可以间接通过创建监听器的同时加载spring容器 -->
+  <!--加载spring配置文件 -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:springConfig.xml</param-value>
+  </context-param>
+
+  <!--  使用filter过滤登录-->
+  <filter>
+    <filter-name>SessionFilter</filter-name>
+    <filter-class>com.test.ssm.tools.LoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SessionFilter</filter-name>
+    <url-pattern>/views/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+
+    <filter-name>characterEncodingFilter</filter-name>
+
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+
+    <init-param>
+
+      <param-name>encoding</param-name>
+
+      <param-value>UTF-8</param-value>
+
+    </init-param>
+
+    <init-param>
+
+      <param-name>forceEncoding</param-name>
+
+      <param-value>true</param-value>
+
+    </init-param>
+
+  </filter>
+
+  <filter-mapping>
+
+    <filter-name>characterEncodingFilter</filter-name>
+
+    <url-pattern>/*</url-pattern>
+
+  </filter-mapping>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- 作用解释：url-pattern是将所有的请求拦截下来，交给指定名称为springmvc的servlet处理
+    servlet：配置具体的servlet类
+    init-param:初始化参数，创建该Servlet类需要使用
+    DispatcherServlet: 该类是springmvc核心类
+    load-on-startup：在项目启动时就创建servlet的一个对象（不论是servlet对象还是spring容器对象，都只有一个）-->
+  <!-- 加载springmvc配置文件 -->
+  <servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!-- 初始化参数 -->
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:springmvcConfig.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <!-- 加载mybatis配置文件的工作交给了springConfig文件（配置myBatis的SqlSessionFactoryBean步骤加载了mybatisConfig文件） -->
+
+  <!-- static resources -->
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.css</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.gif</url-pattern>
+
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.jpg</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.js</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.svg</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.png</url-pattern>
+  </servlet-mapping>
+</web-app>

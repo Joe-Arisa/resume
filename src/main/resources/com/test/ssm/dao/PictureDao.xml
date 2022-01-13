@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.ssm.dao.PictureDao">
+
+    <resultMap type="Picture" id="PictureResult">
+        <id     property="id"      column="id"      />
+        <result property="email"    column="email"    />
+        <result property="image"     column="image"     />
+    </resultMap>
+
+    <!--  1.查询Picture的信息-->
+    <select id="selectPictureByEmail" resultMap="PictureResult">
+        select id, image, email from picture where email = #{email}
+    </select>
+<!--       2.存储一个图片-->
+    <insert id="insertPicture" >
+        insert into picture(email, image) values (#{email}, #{image})
+    </insert>
+
+<!--      3.修改图片-->
+    <update id="updatePicture" >
+        update picture set image = #{image} where email = #{email}
+    </update>
+</mapper>

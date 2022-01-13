@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.ssm.dao.ResumeDao">
+
+    <resultMap type="Resume" id="ResumeResult">
+        <result property="userEmail"    column="user_email"    />
+        <result property="userName"    column="user_name"    />
+        <result property="gender"    column="gender"    />
+        <result property="years"    column="years"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="personalMessage"    column="personal_message"    />
+        <result property="university"    column="university"    />
+        <result property="profession"    column="profession"    />
+        <result property="learnDegree"    column="learn_degree"    />
+        <result property="company"    column="company"    />
+        <result property="station"    column="station"    />
+        <result property="projectExperience"    column="project_experience"    />
+        <result property="expectStation"    column="expect_station"    />
+        <result property="expectWage"    column="expect_wage"    />
+    </resultMap>
+
+    <select id="selectResume" parameterType="Resume" resultMap="ResumeResult">
+        select user_email, user_name, gender, years, phone, email, personal_message, university, profession, learn_degree, company, station, project_experience, expect_station, expect_wage
+        from resume
+        where user_email = #{userEmail}
+    </select>
+
+    <insert id="insertResume" parameterType="Resume">
+        insert into resume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userEmail != null">user_email,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="years != null">years,</if>
+            <if test="phone != null">phone,</if>
+            <if test="email != null">email,</if>
+            <if test="personalMessage != null">personal_message,</if>
+            <if test="university != null">university,</if>
+            <if test="profession != null">profession,</if>
+            <if test="learnDegree  != null">learn_degree,</if>
+            <if test="company != null">company,</if>
+            <if test="station != null">station,</if>
+            <if test="projectExperience != null">project_experience,</if>
+            <if test="expectStation != null">expect_station,</if>
+            <if test="expectWage != null">expect_wage,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userEmail != null">#{userEmail},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="years != null">#{years},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="personalMessage != null">#{personalMessage},</if>
+            <if test="university != null">#{university},</if>
+            <if test="profession != null">#{profession},</if>
+            <if test="learnDegree != null">#{learnDegree},</if>
+            <if test="company != null">#{company},</if>
+            <if test="station != null">#{station},</if>
+            <if test="projectExperience != null">#{projectExperience},</if>
+            <if test="expectStation != null">#{expectStation},</if>
+            <if test="expectWage != null">#{expectWage},</if>
+        </trim>
+    </insert>
+
+    <update id="updateResume" parameterType="Resume">
+        update resume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="years != null">years = #{years},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="personalMessage != null">personal_message = #{personalMessage},</if>
+            <if test="university != null">university = #{university},</if>
+            <if test="profession != null">profession = #{profession},</if>
+            <if test="learnDegree != null">learn_degree = #{learnDegree},</if>
+            <if test="company != null">company = #{company},</if>
+            <if test="station != null">station = #{station},</if>
+            <if test="projectExperience != null">project_experience = #{projectExperience},</if>
+            <if test="expectStation != null">expect_station = #{expectStation},</if>
+            <if test="expectWage != null">expect_wage = #{expectWage},</if>
+        </trim>
+        where user_email = #{userEmail}
+    </update>
+
+</mapper>
+
